@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Issue } from '../types/issue';
 import { improveIssue } from '../services/api';
-import ApiKeyForm from '../components/Config/ApiKeyForm';
 import IssueInput from '../components/IssueGroomer/IssueInput';
 import IssueComparison from '../components/IssueGroomer/IssueComparison';
 
-const IssueGrooming: React.FC = () => {
-  const [apiKey, setApiKey] = useState('');
+interface IssueGroomingProps {
+  apiKey: string;
+}
+
+const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey }) => {
   const [originalIssue, setOriginalIssue] = useState<Issue | null>(null);
   const [improvedIssue, setImprovedIssue] = useState<Issue | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,18 +64,15 @@ const IssueGrooming: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-github-dark-bg">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-github-dark-text mb-2">
-            GitGenie AI - Issue Groomer
-          </h1>
-          <p className="text-github-dark-text-secondary">
-            Improve your issues with AI-powered suggestions
-          </p>
-        </header>
-
-        <ApiKeyForm onApiKeySet={setApiKey} currentApiKey={apiKey} />
+    <div className="p-8 max-w-7xl mx-auto">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-github-dark-text mb-2">
+          Issue Groomer
+        </h1>
+        <p className="text-github-dark-text-secondary">
+          Improve your issues with AI-powered suggestions
+        </p>
+      </header>
 
         {error && (
           <div className="mb-6 p-4 bg-github-dark-danger bg-opacity-10 border border-github-dark-danger rounded-lg text-github-dark-danger">
@@ -110,7 +109,6 @@ const IssueGrooming: React.FC = () => {
             isLoading={isLoading}
           />
         )}
-      </div>
     </div>
   );
 };
