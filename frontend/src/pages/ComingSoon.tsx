@@ -2,16 +2,16 @@ import React from 'react';
 
 interface ComingSoonProps {
   title: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   description: string;
 }
 
-const ComingSoon: React.FC<ComingSoonProps> = ({ title, icon, description }) => {
+const ComingSoon: React.FC<ComingSoonProps> = ({ title, icon: Icon, description }) => {
   return (
     <div className="p-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center py-16">
-          <span className="text-6xl mb-4 block">{icon}</span>
+          <Icon className="w-16 h-16 mb-4 mx-auto text-github-dark-text" />
           <h1 className="text-3xl font-bold text-github-dark-text mb-4">
             {title}
           </h1>

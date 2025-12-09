@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Wrench, FileText, LayoutDashboard, TrendingUp, Settings, Sparkles } from 'lucide-react';
 
 interface SidebarProps {
   currentPage: string;
@@ -8,7 +9,7 @@ interface SidebarProps {
 interface NavItem {
   id: string;
   label: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   available: boolean;
 }
 
@@ -16,11 +17,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const navItems: NavItem[] = [
-    { id: 'issue-groomer', label: 'Issue Groomer', icon: '🔧', available: true },
-    { id: 'release-notes', label: 'Release Notes', icon: '📝', available: false },
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', available: false },
-    { id: 'analytics', label: 'Analytics', icon: '📈', available: false },
-    { id: 'settings', label: 'Settings', icon: '⚙️', available: false },
+    { id: 'issue-groomer', label: 'Issue Groomer', icon: Wrench, available: true },
+    { id: 'release-notes', label: 'Release Notes', icon: FileText, available: false },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, available: false },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp, available: false },
+    { id: 'settings', label: 'Settings', icon: Settings, available: false },
   ];
 
   return (
@@ -33,11 +34,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
       <div className="p-4 border-b border-github-dark-border flex items-center justify-between">
         {isExpanded && (
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">🧞</span>
+            <Sparkles className="w-6 h-6 text-github-dark-text-link" />
             <h1 className="text-xl font-bold text-github-dark-text">GitGenie AI</h1>
           </div>
         )}
-        {!isExpanded && <span className="text-2xl mx-auto">🧞</span>}
+        {!isExpanded && <Sparkles className="w-6 h-6 text-github-dark-text-link mx-auto" />}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-github-dark-text-secondary hover:text-github-dark-text transition-colors"
@@ -64,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
                 }`}
                 title={!item.available ? 'Coming soon' : item.label}
               >
-                <span className="text-xl">{item.icon}</span>
+                <item.icon className="w-5 h-5" />
                 {isExpanded && (
                   <div className="flex-1 text-left">
                     <span className="font-medium">{item.label}</span>

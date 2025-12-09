@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Key, Lock } from 'lucide-react';
 
 interface HeaderProps {
   apiKey: string;
@@ -54,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ apiKey, onApiKeySet }) => {
                 : 'bg-github-dark-bg-tertiary border-github-dark-border text-github-dark-text hover:border-github-dark-text-link'
             }`}
           >
-            <span className="text-lg">🔑</span>
+            <Key className="w-4 h-4" />
             <span className="text-sm font-medium">
               {apiKey ? 'API Key Set' : 'Configure API Key'}
             </span>
@@ -66,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ apiKey, onApiKeySet }) => {
             <div className="absolute right-0 mt-2 w-96 bg-github-dark-bg-secondary border border-github-dark-border rounded-lg shadow-xl p-4 z-50">
               <div className="mb-3">
                 <h3 className="text-lg font-semibold text-github-dark-text flex items-center">
-                  <span className="mr-2">🔑</span>
+                  <Key className="w-5 h-5 mr-2" />
                   OpenAI API Key
                 </h3>
                 <p className="text-xs text-github-dark-text-secondary mt-1">
@@ -106,7 +107,7 @@ const Header: React.FC<HeaderProps> = ({ apiKey, onApiKeySet }) => {
 
               <div className="mt-3 pt-3 border-t border-github-dark-border">
                 <p className="text-xs text-github-dark-text-secondary flex items-start">
-                  <span className="mr-1">🔒</span>
+                  <Lock className="w-3 h-3 mr-1 mt-0.5 flex-shrink-0" />
                   <span>
                     Security: API keys are kept in memory only and cleared on page reload.
                     Get your key from{' '}

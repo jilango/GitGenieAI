@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { TrendingUp, Settings } from 'lucide-react';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import IssueGrooming from './pages/IssueGrooming';
@@ -19,9 +20,9 @@ function App() {
       case 'dashboard':
         return <Dashboard />;
       case 'analytics':
-        return <ComingSoon title="Analytics" icon="📈" description="Coming soon" />;
+        return <ComingSoon title="Analytics" icon={TrendingUp} description="Coming soon" />;
       case 'settings':
-        return <ComingSoon title="Settings" icon="⚙️" description="Coming soon" />;
+        return <ComingSoon title="Settings" icon={Settings} description="Coming soon" />;
       default:
         return <IssueGrooming apiKey={apiKey} />;
     }

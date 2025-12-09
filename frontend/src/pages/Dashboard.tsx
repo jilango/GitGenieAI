@@ -1,11 +1,12 @@
 import React from 'react';
+import { LayoutDashboard, TrendingUp, DollarSign, Zap, Target } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   return (
     <div className="p-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center py-16">
-          <span className="text-6xl mb-4 block">📊</span>
+          <LayoutDashboard className="w-16 h-16 mb-4 mx-auto text-github-dark-text" />
           <h1 className="text-3xl font-bold text-github-dark-text mb-4">
             Dashboard
           </h1>
@@ -19,19 +20,19 @@ const Dashboard: React.FC = () => {
             </h2>
             <ul className="space-y-3 text-github-dark-text-secondary">
               <li className="flex items-start">
-                <span className="mr-3">📈</span>
+                <TrendingUp className="w-5 h-5 mr-3 flex-shrink-0 text-github-dark-text-link" />
                 <span>Issue improvement statistics and trends</span>
               </li>
               <li className="flex items-start">
-                <span className="mr-3">💰</span>
+                <DollarSign className="w-5 h-5 mr-3 flex-shrink-0 text-github-dark-text-link" />
                 <span>API usage and cost tracking</span>
               </li>
               <li className="flex items-start">
-                <span className="mr-3">⚡</span>
+                <Zap className="w-5 h-5 mr-3 flex-shrink-0 text-github-dark-text-link" />
                 <span>Performance metrics and response times</span>
               </li>
               <li className="flex items-start">
-                <span className="mr-3">🎯</span>
+                <Target className="w-5 h-5 mr-3 flex-shrink-0 text-github-dark-text-link" />
                 <span>Quality scores and improvement rates</span>
               </li>
             </ul>
