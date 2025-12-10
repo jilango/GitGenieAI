@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
 
   const navItems: NavItem[] = [
     { id: 'issue-groomer', label: 'Issue Groomer', icon: Wrench, available: true },
-    { id: 'release-notes', label: 'Release Notes', icon: FileText, available: false },
+    { id: 'release-notes', label: 'Release Notes', icon: FileText, available: true },
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, available: false },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp, available: false },
     { id: 'settings', label: 'Settings', icon: Settings, available: false },
@@ -86,11 +86,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
       <div className="p-4 border-t border-github-dark-border">
         {isExpanded ? (
           <div className="text-xs text-github-dark-text-secondary">
-            <p className="font-semibold text-github-dark-text mb-1">Phase 1: MVP</p>
-            <p>Issue Groomer Active</p>
+            <p className="font-semibold text-github-dark-text mb-1">Phase 2: Release Notes</p>
+            <p>Issue Groomer & Release Notes Active</p>
           </div>
         ) : (
-          <div className="text-center text-xs text-github-dark-text-secondary">v1.0</div>
+          <div className="text-center text-xs text-github-dark-text-secondary">v2.0</div>
         )}
       </div>
     </div>

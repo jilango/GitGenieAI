@@ -1,36 +1,3 @@
-export interface Issue {
-  title: string;
-  body: string;
-  labels?: string[];
-  priority?: string;
-  assignee?: string;
-  status?: string;
-}
-
-export interface ImproveIssueRequest {
-  issue: Issue;
-}
-
-export interface RateLimitInfo {
-  perMinute: number;
-  perHour: number;
-}
-
-export interface ImproveIssueResponse {
-  improvedIssue: Issue;
-  meta?: {
-    processingTime: number;
-    remaining: RateLimitInfo;
-  };
-}
-
-export interface ErrorResponse {
-  error: string;
-  message: string;
-  remaining?: RateLimitInfo;
-}
-
-// Release Notes Types
 export interface PullRequest {
   number: number;
   title: string;
@@ -75,10 +42,6 @@ export interface CategorizedReleaseNotes {
   maintenance: ReleaseNoteItem[];
 }
 
-export interface GenerateReleaseNotesRequest {
-  input: ReleaseNotesInput;
-}
-
 export interface GenerateReleaseNotesResponse {
   releaseNotes: CategorizedReleaseNotes;
   summary: {
@@ -91,6 +54,10 @@ export interface GenerateReleaseNotesResponse {
   };
   meta?: {
     processingTime: number;
-    remaining: RateLimitInfo;
+    remaining: {
+      perMinute: number;
+      perHour: number;
+    };
   };
 }
+

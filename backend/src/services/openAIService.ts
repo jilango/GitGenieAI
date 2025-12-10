@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { Issue } from '../types';
-import { createIssueImprovementPrompt } from './promptTemplates';
+import { Issue, ReleaseNotesInput, CategorizedReleaseNotes } from '../types';
+import { createIssueImprovementPrompt, createReleaseNotesPrompt } from './promptTemplates';
 
 export class OpenAIService {
   private openai: OpenAI;
@@ -265,6 +265,87 @@ export class OpenAIService {
       
       // For other errors, throw generic message
       throw new Error('Failed to improve issue with OpenAI. Please try again.');
+    }
+  }
+
+  /**
+   * Generate release notes from PRs and issues using OpenAI
+   */
+  async generateReleaseNotes(input: ReleaseNotesInput): Promise<CategorizedReleaseNotes> {
+    const startTime = Date.now();
+    
+    try {
+      // Basic validation
+      if (!input.pullRequests || input.pullRequests.length === 0) {
+        throw new Error('At least one pull request is required');
+      }
+
+      if (input.pullRequests.length > 50) {
+        throw new Error('Too many pull requests (max 50). Please use a shorter date range.');
+      }
+
+      console.log(`→ Generating release notes for ${input.pullRequests.length} pull requests...`);
+
+      const prompt = createReleaseNotesPrompt(input);
+
+      const response = await this.openai.chat.completions.create({
+        model: this.MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a professional technical writer creating release notes. Always respond with valid JSON only. Write customer-friendly descriptions that highlight benefits.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 3000, // Higher limit for release notes
+        response_format: { type: 'json_object' },
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No response from OpenAI');
+      }
+
+      const usage = response.usage;
+      console.log(`✓ OpenAI response received (model: ${this.MODEL}, ${usage?.total_tokens || 'unknown'} tokens)`);
+
+      // Parse response
+      let releaseNotes: any;
+      try {
+        releaseNotes = JSON.parse(content);
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response as JSON:', content.substring(0, 200));
+        throw new Error('Invalid JSON response from AI');
+      }
+
+      // Ensure all categories exist
+      const result: CategorizedReleaseNotes = {
+        features: Array.isArray(releaseNotes.features) ? releaseNotes.features : [],
+        bugFixes: Array.isArray(releaseNotes.bugFixes) ? releaseNotes.bugFixes : [],
+        security: Array.isArray(releaseNotes.security) ? releaseNotes.security : [],
+        performance: Array.isArray(releaseNotes.performance) ? releaseNotes.performance : [],
+        maintenance: Array.isArray(releaseNotes.maintenance) ? releaseNotes.maintenance : [],
+      };
+
+      const duration = Date.now() - startTime;
+      const totalItems = Object.values(result).reduce((sum, arr) => sum + arr.length, 0);
+      console.log(`✅ Release notes generated in ${duration}ms (${totalItems} items)`);
+
+      return result;
+      
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`❌ Release notes generation failed after ${duration}ms:`, error);
+      
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      throw new Error('Failed to generate release notes with OpenAI. Please try again.');
     }
   }
 }

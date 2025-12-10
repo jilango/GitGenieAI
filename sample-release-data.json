@@ -1,0 +1,118 @@
+{
+  "repository": "myorg/awesome-app",
+  "dateRange": {
+    "from": "2024-12-01",
+    "to": "2024-12-31"
+  },
+  "branch": "main",
+  "pullRequests": [
+    {
+      "number": 245,
+      "title": "Add CSV export functionality for user data",
+      "body": "Implemented comprehensive CSV export feature that allows users to export their data in CSV format. Includes all user fields, proper formatting, and handles large datasets efficiently.",
+      "labels": ["feature", "enhancement", "data-export"],
+      "mergedAt": "2024-12-15T14:30:00Z",
+      "author": "alice-dev",
+      "linkedIssues": [123]
+    },
+    {
+      "number": 248,
+      "title": "Fix memory leak in report generation",
+      "body": "Fixed critical memory leak that occurred when generating large reports. The issue was caused by improper cleanup of temporary objects. Memory usage reduced by 60% for large reports.",
+      "labels": ["bug", "critical", "performance"],
+      "mergedAt": "2024-12-18T09:15:00Z",
+      "author": "bob-eng",
+      "linkedIssues": [130, 142]
+    },
+    {
+      "number": 251,
+      "title": "Implement rate limiting on API endpoints",
+      "body": "Added rate limiting middleware to prevent API abuse. Configured limits: 100 requests per hour per user, 10 requests per minute. Includes proper error messages and retry-after headers.",
+      "labels": ["security", "api", "enhancement"],
+      "mergedAt": "2024-12-20T16:45:00Z",
+      "author": "charlie-security"
+    },
+    {
+      "number": 253,
+      "title": "Optimize database queries for dashboard",
+      "body": "Refactored dashboard queries to use proper indexing and reduce N+1 queries. Added query caching for frequently accessed data. Dashboard load time reduced from 3s to 0.5s.",
+      "labels": ["performance", "database", "optimization"],
+      "mergedAt": "2024-12-22T11:20:00Z",
+      "author": "diana-backend",
+      "linkedIssues": [156]
+    },
+    {
+      "number": 255,
+      "title": "Update dependencies to latest versions",
+      "body": "Updated all npm dependencies to their latest stable versions. Includes security patches for 3 vulnerabilities. All tests passing after updates.",
+      "labels": ["maintenance", "dependencies", "security"],
+      "mergedAt": "2024-12-23T10:00:00Z",
+      "author": "eve-devops"
+    },
+    {
+      "number": 258,
+      "title": "Add dark mode support",
+      "body": "Implemented system-wide dark mode with automatic detection of user's OS preference. Users can also manually toggle between light and dark themes. All components updated with proper color schemes.",
+      "labels": ["feature", "ui", "enhancement"],
+      "mergedAt": "2024-12-27T15:30:00Z",
+      "author": "frank-frontend",
+      "linkedIssues": [89]
+    },
+    {
+      "number": 260,
+      "title": "Fix crash on user deletion",
+      "body": "Resolved critical crash that occurred when deleting users with active sessions. Added proper session cleanup and cascade delete handling. Includes comprehensive tests.",
+      "labels": ["bug", "critical", "user-management"],
+      "mergedAt": "2024-12-28T09:45:00Z",
+      "author": "grace-backend",
+      "linkedIssues": [178]
+    },
+    {
+      "number": 262,
+      "title": "Add two-factor authentication",
+      "body": "Implemented TOTP-based two-factor authentication for enhanced account security. Supports authenticator apps like Google Authenticator and Authy. Includes backup codes for account recovery.",
+      "labels": ["feature", "security", "authentication"],
+      "mergedAt": "2024-12-29T14:00:00Z",
+      "author": "henry-security",
+      "linkedIssues": [145]
+    }
+  ],
+  "linkedIssues": [
+    {
+      "number": 123,
+      "title": "Need ability to export user data",
+      "labels": ["feature-request"]
+    },
+    {
+      "number": 130,
+      "title": "Application crashes when generating large reports",
+      "labels": ["bug", "critical"]
+    },
+    {
+      "number": 142,
+      "title": "High memory usage in report module",
+      "labels": ["bug", "performance"]
+    },
+    {
+      "number": 156,
+      "title": "Dashboard is very slow to load",
+      "labels": ["performance", "user-experience"]
+    },
+    {
+      "number": 89,
+      "title": "Add dark mode theme",
+      "labels": ["feature-request", "ui"]
+    },
+    {
+      "number": 178,
+      "title": "App crashes when deleting user",
+      "labels": ["bug", "critical"]
+    },
+    {
+      "number": 145,
+      "title": "Implement 2FA for better security",
+      "labels": ["feature-request", "security"]
+    }
+  ]
+}
+

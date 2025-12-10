@@ -1,4 +1,130 @@
-import { Issue } from '../types';
+import { Issue, ReleaseNotesInput } from '../types';
+
+export function createReleaseNotesPrompt(input: ReleaseNotesInput): string {
+  const prsText = input.pullRequests.map(pr => {
+    const issueLinks = pr.linkedIssues?.length 
+      ? ` (fixes issues: ${pr.linkedIssues.join(', ')})` 
+      : '';
+    return `PR #${pr.number}: ${pr.title}
+Labels: ${pr.labels?.join(', ') || 'none'}
+Author: ${pr.author}
+Merged: ${pr.mergedAt}${issueLinks}
+Description: ${pr.body}`;
+  }).join('\n\n');
+
+  const issuesText = input.linkedIssues?.map(issue => {
+    return `Issue #${issue.number}: ${issue.title}
+Labels: ${issue.labels?.join(', ') || 'none'}`;
+  }).join('\n\n') || 'No linked issues';
+
+  return `You are an expert technical writer creating release notes for software products.
+
+ROLE & OBJECTIVES:
+Generate professional, customer-friendly release notes from merged pull requests and issues. Your goal is to communicate changes clearly to both technical and non-technical audiences.
+
+GUIDELINES:
+
+1. Categorization:
+   Organize changes into these categories based on labels and content:
+   - **features**: New features, enhancements, improvements
+   - **bugFixes**: Bug fixes, crash fixes, error corrections
+   - **security**: Security updates, vulnerability fixes, authentication improvements
+   - **performance**: Performance improvements, optimization, speed enhancements
+   - **maintenance**: Dependency updates, refactoring, internal changes
+
+2. Writing Style:
+   - Use clear, concise language
+   - Focus on user benefits, not technical implementation
+   - Start with action verbs (Added, Fixed, Improved, Updated)
+   - Be specific about what changed
+   - Avoid jargon when possible, explain technical terms when necessary
+
+3. Content Rules:
+   - Title: Clear, concise summary (max 80 characters)
+   - Description: Customer-friendly explanation (max 200 characters)
+   - Include PR and issue numbers for reference
+   - Mark internal/maintenance items that may not interest end-users
+   - Indicate impact level: critical, high, medium, low
+
+4. Quality Standards:
+   - Prioritize critical and high-impact changes first
+   - Group related changes together
+   - Remove redundant or duplicate entries
+   - Maintain professional, positive tone
+   - No marketing hype, just clear facts
+
+STRICT CONSTRAINTS:
+- DO NOT add fictional features or changes
+- DO NOT exaggerate impact or benefits
+- DO NOT include sensitive information (API keys, passwords, internal systems)
+- Title max 80 characters
+- Description max 200 characters
+- Only categorize based on actual content and labels
+
+EXAMPLES:
+
+Example - Feature:
+Input: "PR #123: Add CSV export functionality"
+Output:
+{
+  "title": "CSV Export for User Data",
+  "description": "Export your user lists to CSV format for easy data analysis and reporting. All fields included with proper formatting.",
+  "prNumber": 123,
+  "issueNumbers": [45],
+  "impact": "high"
+}
+
+Example - Bug Fix:
+Input: "PR #125: fix crash on delete user - fixes #67"
+Output:
+{
+  "title": "Fixed Application Crash When Deleting Users",
+  "description": "Resolved crash that occurred when deleting users with active sessions. User removal now works reliably.",
+  "prNumber": 125,
+  "issueNumbers": [67],
+  "impact": "critical"
+}
+
+Example - Security:
+Input: "PR #127: Implement rate limiting on API endpoints"
+Output:
+{
+  "title": "API Rate Limiting",
+  "description": "Added rate limiting to prevent API abuse and ensure fair usage. Limits set at 100 requests per hour per user.",
+  "prNumber": 127,
+  "impact": "medium"
+}
+
+IMPORTANT: Return ONLY a valid JSON object. Do not include explanations or additional text.
+
+REPOSITORY DATA:
+Repository: ${input.repository}
+Date Range: ${input.dateRange.from} to ${input.dateRange.to}
+Branch: ${input.branch || 'main'}
+
+PULL REQUESTS:
+${prsText}
+
+LINKED ISSUES:
+${issuesText}
+
+Return a JSON object in this EXACT format:
+{
+  "features": [
+    {
+      "title": "Feature title (max 80 chars)",
+      "description": "Customer-friendly description (max 200 chars)",
+      "prNumber": 123,
+      "issueNumbers": [45, 67],
+      "impact": "high"
+    }
+  ],
+  "bugFixes": [...],
+  "security": [...],
+  "performance": [...],
+  "maintenance": [...]
+}`;
+}
 
 export function createIssueImprovementPrompt(issue: Issue): string {
   return `You are an expert technical project manager helping to improve issue documentation for software development teams.

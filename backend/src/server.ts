@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import issuesRouter from './routes/issues';
+import releaseNotesRouter from './routes/releaseNotes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -12,13 +13,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Routes
-app.use('/api/issues', issuesRouter);
-
 // Health check
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'GitGenie AI Backend is running' });
 });
+
+// Routes
+app.use('/api/issues', issuesRouter);
+app.use('/api/release-notes', releaseNotesRouter);
 
 // Start server
 app.listen(PORT, () => {

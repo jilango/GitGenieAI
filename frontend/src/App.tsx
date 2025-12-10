@@ -16,7 +16,7 @@ function App() {
       case 'issue-groomer':
         return <IssueGrooming apiKey={apiKey} />;
       case 'release-notes':
-        return <ReleaseNotes />;
+        return <ReleaseNotes apiKey={apiKey} />;
       case 'dashboard':
         return <Dashboard />;
       case 'analytics':
