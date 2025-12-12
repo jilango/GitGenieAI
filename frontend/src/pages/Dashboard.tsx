@@ -4,9 +4,9 @@ import { LayoutDashboard, TrendingUp, DollarSign, Zap, Target } from 'lucide-rea
 const Dashboard: React.FC = () => {
   return (
     <div className="p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center py-16">
-          <LayoutDashboard className="w-16 h-16 mb-4 mx-auto text-github-dark-text" />
+      <div className="max-w-4xl">
+        <div className="py-16">
+          <LayoutDashboard className="w-16 h-16 mb-4 text-github-dark-text" />
           <h1 className="text-3xl font-bold text-github-dark-text mb-4">
             Dashboard
           </h1>

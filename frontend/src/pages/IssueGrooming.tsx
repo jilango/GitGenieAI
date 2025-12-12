@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Wrench } from 'lucide-react';
 import { Issue } from '../types/issue';
 import { improveIssue } from '../services/api';
 import IssueInput from '../components/IssueGroomer/IssueInput';
@@ -66,10 +67,10 @@ const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey, selectedModel }) 
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-8 max-w-7xl">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-github-dark-text mb-2">
-          Issue Groomer
+        <h1 className="text-3xl font-bold text-github-dark-text mb-2 flex items-center">
+          <Wrench className="w-8 h-8 mr-3 text-github-dark-text-link" /> Issue Groomer
         </h1>
         <p className="text-github-dark-text-secondary">
           Improve your issues with AI-powered suggestions
@@ -89,7 +90,7 @@ const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey, selectedModel }) 
         )}
 
         {!originalIssue || !improvedIssue ? (
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl">
             <IssueInput onIssueSubmit={handleImproveIssue} />
             {isLoading && (
               <div className="mt-6 text-center">

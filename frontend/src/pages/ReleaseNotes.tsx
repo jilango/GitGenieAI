@@ -115,7 +115,7 @@ const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey, selectedModel }) =>
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto text-github-dark-text">
+    <div className="p-8 max-w-7xl text-github-dark-text">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-github-dark-text mb-2 flex items-center">
           <FileText className="w-8 h-8 mr-3 text-github-dark-text-link" /> Release Notes Generator
@@ -142,7 +142,7 @@ const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey, selectedModel }) =>
 
       {/* Main Content */}
       {!releaseNotes ? (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl">
           <ReleaseNotesInput onGenerate={handleGenerate} />
           
           {isLoading && (
