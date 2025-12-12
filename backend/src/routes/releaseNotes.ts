@@ -83,9 +83,12 @@ router.post('/generate', async (req: Request, res: Response) => {
       } as ErrorResponse);
     }
 
-    // Step 4: Create OpenAI service and generate release notes
-    console.log(`→ Processing release notes request from ${identifier}`);
-    const openAIService = new OpenAIService(apiKey);
+    // Step 4: Extract optional model from header
+    const model = req.headers['x-openai-model'] as string | undefined;
+    
+    // Step 5: Create OpenAI service and generate release notes
+    console.log(`→ Processing release notes request from ${identifier}${model ? ` with model ${model}` : ''}`);
+    const openAIService = new OpenAIService(apiKey, model);
     
     const releaseNotes = await openAIService.generateReleaseNotes(input);
 
@@ -101,7 +104,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       maintenanceUpdates: releaseNotes.maintenance.length,
     };
 
-    // Step 5: Return success response
+    // Step 6: Return success response
     const duration = Date.now() - startTime;
     const remaining = rateLimiter.getRemainingRequests(identifier);
     
@@ -125,7 +128,8 @@ router.post('/generate', async (req: Request, res: Response) => {
       // Validation errors (400)
       if (error.message.includes('required') || 
           error.message.includes('too many') ||
-          error.message.includes('invalid')) {
+          error.message.includes('invalid') ||
+          error.message.includes('Unsupported model')) {
         return res.status(400).json({
           error: 'Validation Error',
           message: error.message,

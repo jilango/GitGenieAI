@@ -11,12 +11,14 @@ import {
   formatForClipboard,
   downloadFile 
 } from '../utils/exportReleaseNotes';
+import { OpenAIModel } from '../types/models';
 
 interface ReleaseNotesProps {
   apiKey: string;
+  selectedModel: OpenAIModel;
 }
 
-const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey }) => {
+const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey, selectedModel }) => {
   const [releaseNotes, setReleaseNotes] = useState<CategorizedReleaseNotes | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,7 +35,7 @@ const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey }) => {
     setSuccessMessage('');
 
     try {
-      const response = await generateReleaseNotes(input, apiKey);
+      const response = await generateReleaseNotes(input, apiKey, selectedModel);
       setReleaseNotes(response.releaseNotes);
       setSuccessMessage(`✓ Generated ${response.summary.totalChanges} release notes items`);
       setTimeout(() => setSuccessMessage(''), 5000);

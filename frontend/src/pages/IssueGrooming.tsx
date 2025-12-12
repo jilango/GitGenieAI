@@ -3,12 +3,14 @@ import { Issue } from '../types/issue';
 import { improveIssue } from '../services/api';
 import IssueInput from '../components/IssueGroomer/IssueInput';
 import IssueComparison from '../components/IssueGroomer/IssueComparison';
+import { OpenAIModel } from '../types/models';
 
 interface IssueGroomingProps {
   apiKey: string;
+  selectedModel: OpenAIModel;
 }
 
-const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey }) => {
+const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey, selectedModel }) => {
   const [originalIssue, setOriginalIssue] = useState<Issue | null>(null);
   const [improvedIssue, setImprovedIssue] = useState<Issue | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +29,7 @@ const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey }) => {
     setOriginalIssue(issue);
 
     try {
-      const improved = await improveIssue(issue, apiKey);
+      const improved = await improveIssue(issue, apiKey, selectedModel);
       setImprovedIssue(improved);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to improve issue');

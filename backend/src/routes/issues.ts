@@ -79,13 +79,16 @@ router.post('/improve', async (req: Request, res: Response) => {
       } as ErrorResponse);
     }
 
-    // Step 4: Create OpenAI service and improve issue
-    console.log(`→ Processing issue improvement request from ${identifier}`);
-    const openAIService = new OpenAIService(apiKey);
+    // Step 4: Extract optional model from header
+    const model = req.headers['x-openai-model'] as string | undefined;
+    
+    // Step 5: Create OpenAI service and improve issue
+    console.log(`→ Processing issue improvement request from ${identifier}${model ? ` with model ${model}` : ''}`);
+    const openAIService = new OpenAIService(apiKey, model);
     
     const improvedIssue = await openAIService.improveIssue(issue);
 
-    // Step 5: Return success response
+    // Step 6: Return success response
     const duration = Date.now() - startTime;
     const remaining = rateLimiter.getRemainingRequests(identifier);
     
@@ -108,7 +111,8 @@ router.post('/improve', async (req: Request, res: Response) => {
       // Validation errors (400)
       if (error.message.includes('too long') || 
           error.message.includes('empty') ||
-          error.message.includes('malicious')) {
+          error.message.includes('malicious') ||
+          error.message.includes('Unsupported model')) {
         return res.status(400).json({
           error: 'Validation Error',
           message: error.message,

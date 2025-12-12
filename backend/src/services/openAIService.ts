@@ -4,6 +4,7 @@ import { createIssueImprovementPrompt, createReleaseNotesPrompt } from './prompt
 
 export class OpenAIService {
   private openai: OpenAI;
+  private model: string;
   private readonly MAX_TITLE_LENGTH = 100;
   private readonly MAX_BODY_LENGTH = 2000;
   private readonly MAX_INPUT_TITLE_LENGTH = 500;
@@ -18,7 +19,7 @@ export class OpenAIService {
     'gpt-3.5-turbo-1106',
     'gpt-3.5-turbo-0125'
   ];
-  private readonly MODEL = 'gpt-4-turbo-preview'; // Default model with JSON support
+  private readonly DEFAULT_MODEL = 'gpt-4-turbo-preview';
   
   // Patterns for detecting sensitive information
   private readonly FORBIDDEN_PATTERNS = [
@@ -42,10 +43,22 @@ export class OpenAIService {
     /ignore\s+your\s+programming/gi,
   ];
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model?: string) {
     this.openai = new OpenAI({
       apiKey: apiKey,
     });
+    this.model = this.validateModel(model);
+  }
+
+  /**
+   * Validate that the model supports JSON mode
+   */
+  private validateModel(model?: string): string {
+    const requestedModel = model || this.DEFAULT_MODEL;
+    if (!this.SUPPORTED_MODELS.includes(requestedModel)) {
+      throw new Error(`Unsupported model: ${requestedModel}. Use one of: ${this.SUPPORTED_MODELS.join(', ')}`);
+    }
+    return requestedModel;
   }
 
   /**
@@ -205,7 +218,7 @@ export class OpenAIService {
       console.log('→ Sending request to OpenAI...');
 
       const response = await this.openai.chat.completions.create({
-        model: this.MODEL,
+        model: this.model,
         messages: [
           {
             role: 'system',
@@ -228,7 +241,7 @@ export class OpenAIService {
 
       // Log token usage for cost tracking
       const usage = response.usage;
-      console.log(`✓ OpenAI response received (model: ${this.MODEL}, ${usage?.total_tokens || 'unknown'} tokens)`);
+      console.log(`✓ OpenAI response received (model: ${this.model}, ${usage?.total_tokens || 'unknown'} tokens)`);
 
       // Step 5: Parse and validate output
       let improvedIssue: any;
@@ -289,7 +302,7 @@ export class OpenAIService {
       const prompt = createReleaseNotesPrompt(input);
 
       const response = await this.openai.chat.completions.create({
-        model: this.MODEL,
+        model: this.model,
         messages: [
           {
             role: 'system',
@@ -311,7 +324,7 @@ export class OpenAIService {
       }
 
       const usage = response.usage;
-      console.log(`✓ OpenAI response received (model: ${this.MODEL}, ${usage?.total_tokens || 'unknown'} tokens)`);
+      console.log(`✓ OpenAI response received (model: ${this.model}, ${usage?.total_tokens || 'unknown'} tokens)`);
 
       // Parse response
       let releaseNotes: any;

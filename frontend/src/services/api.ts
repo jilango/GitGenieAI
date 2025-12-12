@@ -11,31 +11,40 @@ const api = axios.create({
   },
 });
 
-export const improveIssue = async (issue: Issue, apiKey: string): Promise<Issue> => {
+export const improveIssue = async (issue: Issue, apiKey: string, model?: string): Promise<Issue> => {
+  const headers: Record<string, string> = {
+    'x-openai-api-key': apiKey,
+  };
+  
+  if (model) {
+    headers['x-openai-model'] = model;
+  }
+  
   const response = await api.post<ImproveIssueResponse>(
     '/issues/improve',
     { issue },
-    {
-      headers: {
-        'x-openai-api-key': apiKey,
-      },
-    }
+    { headers }
   );
   return response.data.improvedIssue;
 };
 
 export const generateReleaseNotes = async (
   input: ReleaseNotesInput,
-  apiKey: string
+  apiKey: string,
+  model?: string
 ): Promise<GenerateReleaseNotesResponse> => {
+  const headers: Record<string, string> = {
+    'x-openai-api-key': apiKey,
+  };
+  
+  if (model) {
+    headers['x-openai-model'] = model;
+  }
+  
   const response = await api.post<GenerateReleaseNotesResponse>(
     '/release-notes/generate',
     { input },
-    {
-      headers: {
-        'x-openai-api-key': apiKey,
-      },
-    }
+    { headers }
   );
   return response.data;
 };
