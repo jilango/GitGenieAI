@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Download } from 'lucide-react';
 import { Issue } from '../../types/issue';
 import IssueDisplay from './IssueDisplay';
+import ExportDialog from '../Export/ExportDialog';
 
 interface IssueComparisonProps {
   originalIssue: Issue;
@@ -9,6 +11,8 @@ interface IssueComparisonProps {
   onReject: () => void;
   onRegenerate: () => void;
   onEdit: (issue: Issue) => void;
+  onExport: (format: 'markdown' | 'html' | 'json' | 'csv', template?: string) => void;
+  onCopy: (template?: string) => void;
   isLoading: boolean;
 }
 
@@ -19,13 +23,25 @@ const IssueComparison: React.FC<IssueComparisonProps> = ({
   onReject,
   onRegenerate,
   onEdit,
+  onExport,
+  onCopy,
   isLoading,
 }) => {
+  const [showExportDialog, setShowExportDialog] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-github-dark-text">Issue Comparison</h2>
         <div className="flex gap-2">
+          <button
+            onClick={() => setShowExportDialog(true)}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-github-dark-bg-tertiary border border-github-dark-border rounded text-github-dark-text hover:border-github-dark-text-link transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-4 h-4" />
+            Export
+          </button>
           <button
             onClick={onRegenerate}
             disabled={isLoading}
@@ -66,6 +82,14 @@ const IssueComparison: React.FC<IssueComparisonProps> = ({
           <p className="mt-2 text-github-dark-text-secondary">Regenerating with AI...</p>
         </div>
       )}
+
+      <ExportDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        onExport={onExport}
+        onCopy={onCopy}
+        exportType="issue"
+      />
     </div>
   );
 };

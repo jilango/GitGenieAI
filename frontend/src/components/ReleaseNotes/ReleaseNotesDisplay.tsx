@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { CategorizedReleaseNotes, ReleaseNoteItem } from '../../types/releaseNotes';
 import { Sparkles, Bug, Shield, Zap, Wrench, Edit2, Trash2, Copy, Download } from 'lucide-react';
+import ExportDialog from '../Export/ExportDialog';
 
 interface ReleaseNotesDisplayProps {
   releaseNotes: CategorizedReleaseNotes;
   onEdit: (category: string, index: number, item: ReleaseNoteItem) => void;
   onRemove: (category: string, index: number) => void;
-  onExport: (format: 'markdown' | 'html' | 'json') => void;
-  onCopyToClipboard: () => void;
+  onExport: (format: 'markdown' | 'html' | 'json' | 'csv', template?: string) => void;
+  onCopyToClipboard: (template?: string) => void;
 }
 
 interface CategoryConfig {
@@ -27,6 +28,7 @@ const ReleaseNotesDisplay: React.FC<ReleaseNotesDisplayProps> = ({
   const [editingItem, setEditingItem] = useState<{ category: string; index: number } | null>(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
+  const [showExportDialog, setShowExportDialog] = useState(false);
 
   const categories: CategoryConfig[] = [
     { key: 'features', label: 'New Features', icon: Sparkles, color: 'text-blue-400' },
@@ -81,36 +83,13 @@ const ReleaseNotesDisplay: React.FC<ReleaseNotesDisplayProps> = ({
         </div>
         <div className="flex gap-2">
           <button
-            onClick={onCopyToClipboard}
-            className="flex items-center gap-2 px-4 py-2 bg-github-dark-bg-tertiary border border-github-dark-border rounded text-github-dark-text hover:border-github-dark-text-link transition-colors"
-          >
-            <Copy className="w-4 h-4" />
-            Copy
-          </button>
-          <button
-            onClick={() => onExport('markdown')}
+            onClick={() => setShowExportDialog(true)}
             className="flex items-center gap-2 px-4 py-2 bg-github-dark-accent-emphasis text-white rounded hover:bg-opacity-90 transition-colors"
           >
             <Download className="w-4 h-4" />
-            Export Markdown
+            Export
           </button>
         </div>
-      </div>
-
-      {/* Export Options */}
-      <div className="flex gap-2 text-sm">
-        <button
-          onClick={() => onExport('html')}
-          className="px-3 py-1 bg-github-dark-bg-tertiary border border-github-dark-border rounded text-github-dark-text hover:border-github-dark-text-link transition-colors"
-        >
-          Export HTML
-        </button>
-        <button
-          onClick={() => onExport('json')}
-          className="px-3 py-1 bg-github-dark-bg-tertiary border border-github-dark-border rounded text-github-dark-text hover:border-github-dark-text-link transition-colors"
-        >
-          Export JSON
-        </button>
       </div>
 
       {/* Categories */}
@@ -236,6 +215,14 @@ const ReleaseNotesDisplay: React.FC<ReleaseNotesDisplayProps> = ({
           No release notes generated yet
         </div>
       )}
+
+      <ExportDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        onExport={onExport}
+        onCopy={onCopyToClipboard}
+        exportType="release-notes"
+      />
     </div>
   );
 };

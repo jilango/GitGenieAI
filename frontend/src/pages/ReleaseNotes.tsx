@@ -7,10 +7,11 @@ import ReleaseNotesDisplay from '../components/ReleaseNotes/ReleaseNotesDisplay'
 import { 
   exportAsMarkdown, 
   exportAsHTML, 
-  exportAsJSON, 
+  exportAsJSON,
+  exportAsCSV,
   formatForClipboard,
-  downloadFile 
 } from '../utils/exportReleaseNotes';
+import { downloadFile, copyToClipboard, formatFilename, MIME_TYPES } from '../utils/exportUtils';
 import { OpenAIModel } from '../types/models';
 
 interface ReleaseNotesProps {
@@ -63,29 +64,33 @@ const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey, selectedModel }) =>
     setReleaseNotes(updated);
   };
 
-  const handleExport = (format: 'markdown' | 'html' | 'json') => {
+  const handleExport = (format: 'markdown' | 'html' | 'json' | 'csv', template?: string) => {
     if (!releaseNotes) return;
 
-    const date = new Date().toISOString().split('T')[0];
     let content: string;
     let filename: string;
     let mimeType: string;
 
     switch (format) {
       case 'markdown':
-        content = exportAsMarkdown(releaseNotes);
-        filename = `release-notes-${date}.md`;
-        mimeType = 'text/markdown';
+        content = exportAsMarkdown(releaseNotes, undefined, template);
+        filename = formatFilename('release-notes', 'md');
+        mimeType = MIME_TYPES.markdown;
         break;
       case 'html':
-        content = exportAsHTML(releaseNotes);
-        filename = `release-notes-${date}.html`;
-        mimeType = 'text/html';
+        content = exportAsHTML(releaseNotes, undefined, template);
+        filename = formatFilename('release-notes', 'html');
+        mimeType = MIME_TYPES.html;
         break;
       case 'json':
         content = exportAsJSON(releaseNotes);
-        filename = `release-notes-${date}.json`;
-        mimeType = 'application/json';
+        filename = formatFilename('release-notes', 'json');
+        mimeType = MIME_TYPES.json;
+        break;
+      case 'csv':
+        content = exportAsCSV(releaseNotes);
+        filename = formatFilename('release-notes', 'csv');
+        mimeType = MIME_TYPES.csv;
         break;
     }
 
@@ -94,18 +99,48 @@ const ReleaseNotes: React.FC<ReleaseNotesProps> = ({ apiKey, selectedModel }) =>
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
-  const handleCopyToClipboard = async () => {
+  const handleCopyToClipboard = async (template?: string) => {
     if (!releaseNotes) return;
 
     try {
-      const text = formatForClipboard(releaseNotes);
-      await navigator.clipboard.writeText(text);
+      let text: string;
+      if (template) {
+        // Use template for clipboard
+        const { parseTemplate, formatDate } = await import('../utils/templateEngine');
+        const data = {
+          version: '',
+          date: formatDate(),
+          features: formatCategoryForClipboard(releaseNotes.features),
+          bugFixes: formatCategoryForClipboard(releaseNotes.bugFixes),
+          security: formatCategoryForClipboard(releaseNotes.security),
+          performance: formatCategoryForClipboard(releaseNotes.performance),
+          maintenance: formatCategoryForClipboard(releaseNotes.maintenance),
+        };
+        text = parseTemplate(template, data);
+      } else {
+        text = formatForClipboard(releaseNotes);
+      }
+      
+      await copyToClipboard(text);
       setSuccessMessage('✓ Copied to clipboard');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError('Failed to copy to clipboard');
       setTimeout(() => setError(''), 3000);
     }
+  };
+
+  const formatCategoryForClipboard = (items: typeof releaseNotes.features): string => {
+    if (!items || items.length === 0) return '';
+    return items.map(item => {
+      const refs: string[] = [];
+      if (item.prNumber) refs.push(`PR #${item.prNumber}`);
+      if (item.issueNumbers && item.issueNumbers.length > 0) {
+        refs.push(`#${item.issueNumbers.join(', #')}`);
+      }
+      const refText = refs.length > 0 ? ` [${refs.join(' | ')}]` : '';
+      return `  • ${item.title}\n    ${item.description}${refText}`;
+    }).join('\n');
   };
 
   const handleReset = () => {

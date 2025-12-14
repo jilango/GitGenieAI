@@ -5,6 +5,14 @@ import { improveIssue } from '../services/api';
 import IssueInput from '../components/IssueGroomer/IssueInput';
 import IssueComparison from '../components/IssueGroomer/IssueComparison';
 import { OpenAIModel } from '../types/models';
+import {
+  exportIssueAsMarkdown,
+  exportIssueAsHTML,
+  exportIssueAsJSON,
+  exportIssueAsCSV,
+  formatIssueForClipboard,
+} from '../utils/exportIssue';
+import { downloadFile, copyToClipboard, formatFilename, MIME_TYPES } from '../utils/exportUtils';
 
 interface IssueGroomingProps {
   apiKey: string;
@@ -66,6 +74,72 @@ const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey, selectedModel }) 
     setImprovedIssue(editedIssue);
   };
 
+  const handleExport = (format: 'markdown' | 'html' | 'json' | 'csv', template?: string) => {
+    if (!improvedIssue) return;
+
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+
+    switch (format) {
+      case 'markdown':
+        content = exportIssueAsMarkdown(improvedIssue, template);
+        filename = formatFilename('issue', 'md');
+        mimeType = MIME_TYPES.markdown;
+        break;
+      case 'html':
+        content = exportIssueAsHTML(improvedIssue, template);
+        filename = formatFilename('issue', 'html');
+        mimeType = MIME_TYPES.html;
+        break;
+      case 'json':
+        content = exportIssueAsJSON(improvedIssue);
+        filename = formatFilename('issue', 'json');
+        mimeType = MIME_TYPES.json;
+        break;
+      case 'csv':
+        content = exportIssueAsCSV(improvedIssue);
+        filename = formatFilename('issue', 'csv');
+        mimeType = MIME_TYPES.csv;
+        break;
+    }
+
+    downloadFile(content, filename, mimeType);
+    setSuccessMessage(`✓ Exported as ${format.toUpperCase()}`);
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
+  const handleCopy = async (template?: string) => {
+    if (!improvedIssue) return;
+
+    try {
+      let text: string;
+      if (template) {
+        // Use template for clipboard
+        const data = {
+          ...improvedIssue,
+          labels: improvedIssue.labels?.join(', ') || '',
+          date: new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }),
+        };
+        const { parseTemplate } = await import('../utils/templateEngine');
+        text = parseTemplate(template, data);
+      } else {
+        text = formatIssueForClipboard(improvedIssue);
+      }
+      
+      await copyToClipboard(text);
+      setSuccessMessage('✓ Copied to clipboard');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setError('Failed to copy to clipboard');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
   return (
     <div className="p-8 max-w-7xl">
       <header className="mb-8">
@@ -109,6 +183,8 @@ const IssueGrooming: React.FC<IssueGroomingProps> = ({ apiKey, selectedModel }) 
             onReject={handleReject}
             onRegenerate={handleRegenerate}
             onEdit={handleEdit}
+            onExport={handleExport}
+            onCopy={handleCopy}
             isLoading={isLoading}
           />
         )}
